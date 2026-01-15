@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     firstName:{
         type: String
     },
-    lastname: {
+    lastName: {
         type: String
     },
     gender: {

@@ -4,20 +4,21 @@ const User = require("./models/user")
 
 const app = express()
 
+// converting the json data to js so that js understand
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
+    // creating a new instance of the user model
+    // req.body -> app.use(express.json()); will convert and dump the data into body so that we can use and made it dynamic
+    const user = new User(req.body)
+    console.log(req.body);
     
-    const user = new User({
-        firstName: "Priyanka",
-        lastName: "lala",
-        emailID: "priyanka@gmail.com",
-        password: "priyasaha",
-    })
 
     try{
         await user.save()
         res.send("User adeed successfully");
     }catch(err){
-        res.status(400).send("Error saving the user:" + err.mesaage);
+        res.status(400).send("Error saving the user:" + err.message);
     }
     
 });
