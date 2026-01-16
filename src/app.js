@@ -31,12 +31,51 @@ app.post("/signup", async (req, res) => {
 
         await user.save()
         res.send("User adeed successfully");
-        
+
     }catch(err){
         res.status(400).send("Error saving the user:" + err.message);
     }
     
 });
+
+
+app.post("/login", async(req, res) => {
+    try{
+        const { emailID, password } = req.body;
+
+        const user = await User.findOne({ emailID: emailID});
+
+        if(!user){
+            throw new Error ("Invalid credentials");
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if(isPasswordValid){
+            res.send("Login Successful");
+        }else{
+            throw new Error ("Invalid credentials");
+        }
+
+    }
+    catch(err){
+        res.status(400).send("Login failed: " + err.message);
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
