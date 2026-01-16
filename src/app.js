@@ -129,9 +129,10 @@ app.patch("/user/:userID", async(req, res) => {
         console.log(user);
         
         res.send("User updated successfully");
-    }catch(err){
-        res.status(400).send("Update failed: " + err.message);
-    }
+        }
+        catch(err){
+            res.status(400).send("Update failed: " + err.message);
+        }
 });
 
 

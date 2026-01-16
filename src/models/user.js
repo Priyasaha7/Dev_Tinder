@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema(
     lastName: {
       type: String,
       trim: true,
+      minlength: 3,
+      maxlength: 30,
     },
 
     gender: {
@@ -42,36 +44,52 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false,
-    //   validate(value) {
-    //     if (!validator.isStrongPassword(value)) {
-    //       throw new Error("Enter a strong password");
-    //     }
-    //   },
+      validate(value){
+        if(!validator.isStrongPassword(value)){
+          throw new Error ("Password is not strong enough" + value );
+        }
+      }
     },
 
     age: {
       type: Number,
-      min: 18,
+      required: true,
+      max: 100,
+      min: 18
+
     },
 
     photoUrl: {
       type: String,
       default: "https://geographyandyou.com/images/user-profile.png",
+      validate(value){
+        if(!validator.isURL(value)){
+          throw new Error ("Photo URL is not valid");
+        }
+      }
     },
 
     about: {
       type: String,
       default: "This is a default about of the user!",
-      maxlength: 200,
+      maxlength: 400,
+      trim: true,
     },
 
     skills: {
       type: [String],
       unique: true,
-      maxlength: 10,
+      // validate(value){
+      //   if(value.length > 10){
+      //     throw new Error ("Skills cannot be more than 10");
+      //   }
+      // }
+
     },
+
+
   },
+
   { timestamps: true }
 );
 
