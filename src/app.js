@@ -1,6 +1,8 @@
 const express = require("express");
 const connectDB = require("./config/database");
 const User = require("./models/user")
+const { validateSignUpData } = require("./utils/validation")
+const bcrypt = require("bcrypt")
 
 const app = express()
 
@@ -12,15 +14,24 @@ app.use(express.json());
 // creating a new instance of the user model
 // req.body -> app.use(express.json()); will convert and dump the data into body so that we can use and made it dynamic
 
-
-app.post("/signup", async (req, res) => {
-    const user = new User(req.body)
-    console.log(req.body);
+// Registering a new user, this is a entry point for our user to signup
+app.post("/signup", async (req, res) => {   
     
-
     try{
+
+        // Validation of Data
+        validateSignUpData(req);
+
+        const {firstName, lastName, emailID, password} = new User(req.body);
+
+        //Encrypt the password
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        const user = new User({firstName, lastName, emailID, password: passwordHash})
+
         await user.save()
         res.send("User adeed successfully");
+        
     }catch(err){
         res.status(400).send("Error saving the user:" + err.message);
     }
