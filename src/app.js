@@ -3,11 +3,14 @@ const connectDB = require("./config/database");
 const User = require("./models/user")
 const { validateSignUpData } = require("./utils/validation")
 const bcrypt = require("bcrypt")
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const app = express()
 
 // converting the json data to js so that js understand
 app.use(express.json());
+app.use(cookieParser());
 
 
 // saving our data to databse from postman 
@@ -52,7 +55,15 @@ app.post("/login", async(req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if(isPasswordValid){
+
+            // Create a JWT token
+            const token = await jwt.sign({ _id: user._id}, "DEV@TINDER#2004");
+            
+            // Add the token to cookie and send the response back to the user
+            res.cookie("token", token);
+
             res.send("Login Successful");
+
         }else{
             throw new Error ("Invalid credentials");
         }
@@ -64,19 +75,28 @@ app.post("/login", async(req, res) => {
 });
 
 
+app.get("/profile", async (req, res) => {
+    try{
+        const {token} = req.cookies;
 
+        if(!token){
+            throw new Error("Invalid Token");
+        }
 
+        const decodedMessage = await jwt.verify(token, "DEV@TINDER#2004");
+        const { _id } = decodedMessage;
+        console.log("Logged in user id is " + _id );
 
+        const user = await User.findById(_id);
+        if(!user){
+            throw new Error("User not found");
+        }
+        res.send(user);
 
-
-
-
-
-
-
-
-
-
+    }catch{
+        res.status(400).send("Invalid Credentials");
+    }
+})
 
 
 //getting our data from the databse 
@@ -97,6 +117,7 @@ app.get("/user", async(req, res) => {
         res.status(404).send("Something went wrong");
     }
 })
+
 
 
 // For Finding Users
@@ -138,6 +159,7 @@ app.get("/feed", async (req, res) => {
         res.status(404).send("Something went wrong");
     }
 })
+
 
 
 // Delete api 
