@@ -15,4 +15,18 @@ const validateSignUpData = (req) => {
     }
 };
 
-module.exports = { validateSignUpData };
+
+const validateEditProfileData = (req) => {
+
+    const allowedEditFields = [ "firstName", "lastName", "gender", "password", "age" , "photoUrl", "skills"];
+
+    const isAllowed = Object.keys(req.body).every((k) => allowedEditFields.includes(k));
+
+    if(!isAllowed){
+        throw new Error("Invalid edit fields");
+    }
+
+    return isAllowed;
+};
+
+module.exports = { validateSignUpData, validateEditProfileData };
