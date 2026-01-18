@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt")
 
 const authRouter = express.Router();
 
+// Registering a new user, this is a entry point for our user to signup
 authRouter.post("/signup", async (req, res) => {   
     
     try{
@@ -59,6 +60,11 @@ authRouter.post("/login", async(req, res) => {
     catch(err){
         res.status(400).send("Login failed: " + err.message);
     }
+});
+
+authRouter.post("/logout", (req, res) => {
+    res.cookie("token", null, { expires: new Date(Date.now())});
+    res.send("Logout Successful");
 });
 
 

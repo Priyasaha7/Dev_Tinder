@@ -20,8 +20,6 @@ app.use("/", requestRouter);
 // creating a new instance of the user model
 // req.body -> app.use(express.json()); will convert and dump the data into body so that we can use and made it dynamic
 
-// Registering a new user, this is a entry point for our user to signup
-
 
 
 connectDB()
