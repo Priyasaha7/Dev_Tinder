@@ -62,4 +62,26 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     
 });
 
+
+requestRouter.get("/request/status/:toUserId", userAuth, async (req, res) => {
+    try{
+        const fromUserId = req.user._id;
+        const toUserId = req.params.toUserId;
+        const connectionRequest = await ConnectionRequest.findOne({
+            fromUserId,
+            toUserId,
+
+        });
+        if(!connectionRequest){
+            return res.status(200).json({
+                message: " No connection request found",
+                data: null,
+            });
+    }}
+catch(err){
+        res.status(400).send("ERROR" + err.message);
+}
+});
+
+
 module.exports = requestRouter;
