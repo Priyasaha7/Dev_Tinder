@@ -56,8 +56,6 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
             data,
         });
 
-
-
     }catch(err){
         res.status(400).send("ERROR" + err.message);
     }
