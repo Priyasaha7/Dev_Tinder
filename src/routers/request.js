@@ -63,24 +63,38 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
 });
 
 
-requestRouter.get("/request/status/:toUserId", userAuth, async (req, res) => {
+requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, res) => {
     try{
-        const fromUserId = req.user._id;
-        const toUserId = req.params.toUserId;
-        const connectionRequest = await ConnectionRequest.findOne({
-            fromUserId,
-            toUserId,
 
+        const loggedInUser = req.user;
+
+        const { status, requestId } = req.params;
+
+        const allowedStatus = [ "accepted", "rejected"];
+        if(!allowedStatus.includes(status)){
+            throw new Error("Invalid status:" + status);
+        }
+
+        const connectionRequest = await ConnectionRequest.findOne({
+            _id: requestId,
+            toUserId: loggedInUser._id,
+            status: "interested",
         });
         if(!connectionRequest){
-            return res.status(200).json({
-                message: " No connection request found",
-                data: null,
-            });
-    }}
-catch(err){
+            throw new Error(" No pending connection request found");
+        }
+
+        connectionRequest.status = status;
+        const data = await connectionRequest.save();
+
+        res.status(200).json({
+            message: "Connection request " + status,
+            data,
+        });
+    }
+    catch(err){
         res.status(400).send("ERROR" + err.message);
-}
+    }
 });
 
 
