@@ -1,7 +1,9 @@
 const express = require("express");
 const userRouter = express.Router();
-const userAuth = require("../middleWare/auth");
+const { userAuth }= require("../middleWare/auth");
 const ConnectionRequest = require("../models/connectionRequest");
+
+const USER_PROFILE_FIELDS = "firstName lastName about age gender skills";
 
 userRouter.get("/user/requests/received", userAuth, async (req, res)=>{
     try{
@@ -10,7 +12,7 @@ userRouter.get("/user/requests/received", userAuth, async (req, res)=>{
         const connectionRequest = await ConnectionRequest.find({
             toUserId: loggedInUser._id,
             status: "interested",
-        }).populate("fromUserId", "firstName lastName about age gender skills");
+        }).populate("fromUserId", USER_PROFILE_FIELDS);
 
         res.status(200).json({
             message: "Connection requests retrieved successfully",
@@ -22,3 +24,7 @@ userRouter.get("/user/requests/received", userAuth, async (req, res)=>{
         res.status(400).send("ERROR" + err.message);
     }
 });
+
+
+
+module.exports = userRouter;

@@ -1,101 +1,88 @@
 const express = require("express");
-const {userAuth} = require ("../middleWare/auth.js");
+const requestRouter = express.Router();
+
+const { userAuth } = require("../middleWare/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
-const requestRouter = express.Router();
 
 requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
+    try {
+      const fromUserId = req.user._id;
+      const toUserId = req.params.toUserId;
+      const status = req.params.status;
 
-    try{
-        const user = req.user;
+      const allowedStatus = ["ignored", "interested"];
+      if (!allowedStatus.includes(status)) {
+        return res
+          .status(400)
+          .json({ message: "Invalid status type: " + status });
+      }
 
-        const fromUserId = user._id;
-        const toUserId = req.params.toUserId;
-        const status = req.params.status;
+      const toUser = await User.findById(toUserId);
+      if (!toUser) {
+        return res.status(404).json({ message: "User not found!" });
+      }
 
+      const existingConnectionRequest = await ConnectionRequest.findOne({
+        $or: [
+          { fromUserId, toUserId },
+          { fromUserId: toUserId, toUserId: fromUserId },
+        ],
+      });
+      if (existingConnectionRequest) {
+        return res
+          .status(400)
+          .send({ message: "Connection Request Already Exists!!" });
+      }
 
-        // 1.Allow only valid request statuses (interested or ignored)
-        const allowedStatus = [ "interested", "ignored"];
-        if(!allowedStatus.includes(status)){
-            throw new Error("Invalid status:" + status);
-        }
+      const connectionRequest = new ConnectionRequest({
+        fromUserId,
+        toUserId,
+        status,
+      });
 
+      const data = await connectionRequest.save();
 
-        //2.Check if a connection request already exists between the two users
-        const existingConnectionRequest = await ConnectionRequest.findOne({
-            $or:[
-                { fromUserId, toUserId},
-                { fromUserId: toUserId, toUserId: fromUserId},
-            ],
-        });
-        if(existingConnectionRequest){
-            throw new Error(" Connection already Exists");
-        };
-
-
-        //3.// Verify that the user receiving the connection request exists in the DB
-        const toUser = await User.findById(toUserId);
-        if(!toUser){
-            throw new Error(" User doesnot exists");
-        }
-
-
-        const connectionRequest = new ConnectionRequest ({
-            fromUserId,
-            toUserId,
-            status,
-        });
-
-        const data = await connectionRequest.save();
-
-        res.status(200).json({
-            message: status === "interested"
-                ? `${req.user.firstName} sent a connection request to ${toUser.firstName}`
-                : `${req.user.firstName} ignored ${toUser.firstName}`,
-            data,
-        });
-
-    }catch(err){
-        res.status(400).send("ERROR" + err.message);
+      res.json({
+        message:
+          req.user.firstName + " is " + status + " in " + toUser.firstName,
+        data,
+      });
+    } catch (err) {
+      res.status(400).send("ERROR: " + err.message);
     }
-    
-});
-
+  });
 
 requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, res) => {
-    try{
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
 
-        const loggedInUser = req.user;
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ messaage: "Status not allowed!" });
+      }
 
-        const { status, requestId } = req.params;
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+      if (!connectionRequest) {
+        return res
+          .status(404)
+          .json({ message: "Connection request not found" });
+      }
 
-        const allowedStatus = [ "accepted", "rejected"];
-        if(!allowedStatus.includes(status)){
-            throw new Error("Invalid status:" + status);
-        }
+      connectionRequest.status = status;
 
-        const connectionRequest = await ConnectionRequest.findOne({
-            _id: requestId,
-            toUserId: loggedInUser._id,
-            status: "interested",
-        });
-        if(!connectionRequest){
-            throw new Error(" No pending connection request found");
-        }
+      const data = await connectionRequest.save();
 
-        connectionRequest.status = status;
-        const data = await connectionRequest.save();
-
-        res.status(200).json({
-            message: "Connection request " + status,
-            data,
-        });
+      res.json({ message: "Connection request " + status, data });
+    } catch (err) {
+      res.status(400).send("ERROR: " + err.message);
     }
-    catch(err){
-        res.status(400).send("ERROR" + err.message);
-    }
-});
-
+  });
 
 module.exports = requestRouter;

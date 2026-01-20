@@ -5,6 +5,7 @@ const connectDB = require("./config/database");
 const authRouter = require("./routers/auth");
 const profileRouter = require("./routers/profile");
 const requestRouter = require("./routers/request");
+const userRouter = require("./routers/user");
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(cookieParser());
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
+app.use("/",userRouter);
 
 // saving our data to databse from postman 
 // creating a new instance of the user model
