@@ -146,4 +146,4 @@ Typical path:
    - `GET /user/connected`
 
 This section can be expanded later with authentication details, request/response examples, and diagrams as the project grows.
-```
+```undefined```
