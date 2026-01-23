@@ -42,3 +42,17 @@ app.listen(7777, () => {
     console.log("Server is successfully listening on port 7777");
     
 });
+
+
+
+// const request = require("supertest");
+// const app = require("./app");
+
+// describe("GET /user", () => {
+//   test("should return 5th Response", async () => {
+//     const response = await request(app).get("/user");
+
+//     expect(response.status).toBe(200);
+//     expect(response.text).toBe("5th Response");
+//   });
+// });
