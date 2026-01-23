@@ -131,15 +131,6 @@ app.get("/user", async(req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
 //Feed api - GET /feed -> get all the users from the databse
 app.get("/feed", async (req, res) => {
     try{
