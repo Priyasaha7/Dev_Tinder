@@ -13,12 +13,7 @@ const cors = require("cors");
 const app = express();
 
 // enabling cors for all the routes
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  }),
-);
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 // converting the json data to js so that js understand
 app.use(express.json());
