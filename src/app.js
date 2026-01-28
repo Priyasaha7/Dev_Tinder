@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("./utils/cronJob");
 
 const express = require("express");
 const cookieParser = require("cookie-parser");
@@ -16,6 +17,13 @@ const app = express();
 
 // enabling cors for all the routes
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+// app.use(
+//   cors({
+//     origin: true,
+//     credentials: true,
+//   })
+// );
 
 // converting the json data to js so that js understand
 app.use(express.json());
@@ -43,12 +51,10 @@ connectDB()
   });
 
 (async () => {
-  const result = await sendEmail({
-    to: "priyasaha4658000@gmail.com", // verified in SES
-    from: "priya.sot010085@pwioi.com", // verified in SES
-    subject: "Connection Request",
-    body: "You got a connection request from priya.sot010085@pwioi.com",
-  });
-
+  const result = await sendEmail(
+    "Connection Request",
+    "You got a connection request from priya.sot010085@pwioi.com",
+    "priyasaha4658000@gmail.com",
+  );
   console.log("Email send result:", result);
 })();
