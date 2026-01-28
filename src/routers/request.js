@@ -5,8 +5,12 @@ const { userAuth } = require("../middleWare/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
+const sendEmail = require("../utils/sendEmail");
 
-requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
+requestRouter.post(
+  "/request/send/:status/:toUserId",
+  userAuth,
+  async (req, res) => {
     try {
       const fromUserId = req.user._id;
       const toUserId = req.params.toUserId;
@@ -44,6 +48,10 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
 
       const data = await connectionRequest.save();
 
+      const emailRes = await sendEmail.run();
+
+      console.log(emailRes);
+
       res.json({
         message:
           req.user.firstName + " is " + status + " in " + toUser.firstName,
@@ -52,9 +60,13 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     } catch (err) {
       res.status(400).send("ERROR: " + err.message);
     }
-  });
+  },
+);
 
-requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, res) => {
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
     try {
       const loggedInUser = req.user;
       const { status, requestId } = req.params;
@@ -83,6 +95,7 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
     } catch (err) {
       res.status(400).send("ERROR: " + err.message);
     }
-  });
+  },
+);
 
 module.exports = requestRouter;

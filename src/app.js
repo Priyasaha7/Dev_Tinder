@@ -26,7 +26,7 @@ app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
 
-const sendEmail = require("./src/utils/sendEmail");
+const sendEmail = require("./utils/sendEmail");
 // saving our data to databse from postman
 // creating a new instance of the user model
 // req.body -> app.use(express.json()); will convert and dump the data into body so that we can use and made it dynamic
@@ -42,8 +42,13 @@ connectDB()
     console.error("Database cannot be connected!!");
   });
 
-sendEmail({
-  to: "verified_friend@gmail.com",
-  subject: "Hello from SES",
-  body: "This is my first SES email 🎉",
-});
+(async () => {
+  const result = await sendEmail({
+    to: "priyasaha4658000@gmail.com", // verified in SES
+    from: "priya.sot010085@pwioi.com", // verified in SES
+    subject: "Connection Request",
+    body: "You got a connection request from priya.sot010085@pwioi.com",
+  });
+
+  console.log("Email send result:", result);
+})();
