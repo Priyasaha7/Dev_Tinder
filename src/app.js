@@ -9,21 +9,16 @@ const authRouter = require("./routers/auth");
 const profileRouter = require("./routers/profile");
 const requestRouter = require("./routers/request");
 const userRouter = require("./routers/user");
+const initializeSocket = require("./utils/socket");
 
 const cors = require("cors");
+const http = require("http");
 
 // creating an express app
 const app = express();
 
 // enabling cors for all the routes
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-
-// app.use(
-//   cors({
-//     origin: true,
-//     credentials: true,
-//   })
-// );
 
 // converting the json data to js so that js understand
 app.use(express.json());
@@ -35,14 +30,14 @@ app.use("/", requestRouter);
 app.use("/", userRouter);
 
 const sendEmail = require("./utils/sendEmail");
-// saving our data to databse from postman
-// creating a new instance of the user model
-// req.body -> app.use(express.json()); will convert and dump the data into body so that we can use and made it dynamic
+
+const server = http.createServer(app);
+initializeSocket(server);
 
 connectDB()
   .then(() => {
     console.log("Database connection established...");
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log("Server is successfully listening on port 7777");
     });
   })
