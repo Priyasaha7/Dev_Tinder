@@ -45,11 +45,12 @@ connectDB()
     console.error("Database cannot be connected!!");
   });
 
-(async () => {
-  const result = await sendEmail(
-    "Connection Request",
-    "You got a connection request from priya.sot010085@pwioi.com",
-    "priyasaha4658000@gmail.com",
-  );
-  console.log("Email send result:", result);
-})();
+// for sending email
+// (async () => {
+//   const result = await sendEmail(
+//     "Connection Request",
+//     "You got a connection request from priya.sot010085@pwioi.com",
+//     "priyasaha4658000@gmail.com",
+//   );
+//   console.log("Email send result:", result);
+// })();
