@@ -9,6 +9,8 @@ const authRouter = require("./routers/auth");
 const profileRouter = require("./routers/profile");
 const requestRouter = require("./routers/request");
 const userRouter = require("./routers/user");
+const chatRouter = require("./routers/chat");
+
 const initializeSocket = require("./utils/socket");
 
 const cors = require("cors");
@@ -28,6 +30,7 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
+app.use("/", chatRouter);
 
 const sendEmail = require("./utils/sendEmail");
 
