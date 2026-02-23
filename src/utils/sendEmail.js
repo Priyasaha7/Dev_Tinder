@@ -6,6 +6,8 @@ const VERIFIED_EMAILS = new Set([
   "priya.sot010085@pwioi.com",
 ]);
 
+// amazon ses is used to send email, but it only allows sending emails to verified email addresses in the sandbox environment.
+
 module.exports = async function sendEmail(subject, body, toEmailId) {
   if (!VERIFIED_EMAILS.has(toEmailId)) {
     console.log("Skipping unverified email:", toEmailId);

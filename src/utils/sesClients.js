@@ -9,4 +9,4 @@ const sesClient = new SESClient({
   },
 });
 
-module.exports = { sesClient }; // ✅ export as object because sendEmail imports { sesClient }
+module.exports = { sesClient }; // export as object because sendEmail imports { sesClient }
